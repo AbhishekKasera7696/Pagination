@@ -1,11 +1,13 @@
 import React from 'react';
 
+
+let countStop;
 const Todo = () =>{
     
     const [inputValue, setInputValue] = React.useState("");
     const [todos,setTodos] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(true);
-    const [isError, setIsError] = React.useState(false);
+    const [isError, setIsError] = React.useState(true);
     const [page, setPage] = React.useState(1);
 
 
@@ -18,6 +20,7 @@ const Todo = () =>{
         fetch(`http://localhost:3005/todos?_page=${page}&_limit=3`)
         .then((res) => res.json())
         .then((res) => {
+            countStop = res.length;
             setTodos(res);
             setIsError(false);
         })
@@ -26,7 +29,8 @@ const Todo = () =>{
     }
 
     const handleAdd = () => {
-        console.log(inputValue)
+        console.log(inputValue);
+        if(inputValue !== ""){
         const payload = {
             title : inputValue,
             staus : false
@@ -47,10 +51,10 @@ const Todo = () =>{
          })
          .catch((err) => setIsError(true))
          .finally(() => setIsLoading(false));
-
+        }
     };
 
-    return isLoading ? (<div>...Loading</div>  ) 
+    return isLoading ? (<div>...Loading</div>) 
     : isError ? <div>Error...something went wrong</div> : (
         <div>
            <input placeholder='Add Todos' 
@@ -64,7 +68,7 @@ const Todo = () =>{
                })
            }
           <button onClick={() => setPage(page - 1)} disabled={page===1}>Less</button>
-          <button onClick={() => setPage(page + 1)}>More</button>
+          <button onClick={() => setPage(page + 1)} disabled={countStop<3}>More</button>
         </div>
         
     );
